@@ -40,6 +40,8 @@ stages:
               script: |
                 echo "Creating resource group if not exists..."
                 az group create --name $(resourceGroup) --location $(location)
+                --only-show-errors \
+                --output none
 
                 echo "Deploying Three VNets and enable Peering..."
                 az deployment group create \
