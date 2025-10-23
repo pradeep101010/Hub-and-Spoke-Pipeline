@@ -23,7 +23,7 @@ stages:
         deploy:
           steps:
           - checkout: self
-          - task: Bash@3
+          - task: Bash
             displayName: 'Login to Azure using Managed Identity'
             inputs:
               targetType: 'inline'
@@ -32,7 +32,7 @@ stages:
                 az login \
                 --output none
 
-          - task: Bash@3
+          - task: Bash
             displayName: 'Deploy Three VNets and enable Peering'
             inputs:
               targetType: 'inline'
