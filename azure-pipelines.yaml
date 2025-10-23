@@ -26,6 +26,7 @@ stages:
           - task: Bash@3
             displayName: 'Login to Azure using Managed Identity'
             inputs:
+              scriptType: ps
               targetType: 'inline'
               script: |
                 echo "Logging into Azure using Managed Identity..."
@@ -34,6 +35,7 @@ stages:
           - task: Bash@3
             displayName: 'Deploy Three VNets and enable Peering'
             inputs:
+              scriptType: ps
               targetType: 'inline'
               script: |
                 echo "Creating resource group if not exists..."
@@ -43,6 +45,6 @@ stages:
                 az deployment group create \
                   --resource-group $(resourceGroup) \
                   --template-file $(vnetTemplateFile) \
-                  --parameters @infra/parameters.json
+                  --parameters "@infra/parameters.json"
 
 
