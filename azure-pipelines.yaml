@@ -11,10 +11,10 @@ variables:
   
 stages:
 - stage: Deploy
-  displayName: 'Deploy Storage Account'
+  displayName: 'Deploy Vnets'
   jobs:
-  - deployment: DeployStorage
-    displayName: 'Deploy Storage via Bicep'
+  - deployment: DeployVnets
+    displayName: 'Deploy Vnets via Bicep'
     environment: hub-and-spoke-env
     pool:
       vmImage: 'ubuntu-latest'
@@ -45,5 +45,5 @@ stages:
                 az deployment group create \
                   --resource-group $(resourceGroup) \
                   --template-file infra/vnet.bicep \
-                  --parameters storageAccountName=$(storageAccountName) location=$(location) sku=$(sku) \
+                  --parameters location=$(location)\
                   --output none
