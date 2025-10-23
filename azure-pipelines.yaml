@@ -10,7 +10,7 @@ variables:
 
 stages:
 - stage: Deploy
-  displayName: 'Deploy Storage Account'
+  displayName: 'Deploy VNets Hub-Spoke'
   jobs:
   - deployment: DeployInfra
     displayName: 'Deploy Infra via Bicep'
@@ -23,10 +23,10 @@ stages:
         deploy:
           steps:
           - checkout: self
+
           - task: Bash@3
             displayName: 'Login to Azure using Managed Identity'
             inputs:
-              scriptType: ps
               targetType: 'inline'
               script: |
                 echo "Logging into Azure using Managed Identity..."
@@ -35,17 +35,13 @@ stages:
           - task: Bash@3
             displayName: 'Deploy Three VNets and enable Peering'
             inputs:
-              scriptType: ps
               targetType: 'inline'
               script: |
                 echo "Creating resource group if not exists..."
-                az group create --name $(resourceGroup) --location $(location) \
-                --output-none
+                az group create --name $(resourceGroup) --location $(location) --output none
 
                 echo "Deploying Three VNets and enable Peering..."
                 az deployment group create \
                   --resource-group $(resourceGroup) \
                   --template-file $(vnetTemplateFile) \
-                  --parameters "@infra/parameters.json"
-
-
+                  --parameters infra/parameters.json
