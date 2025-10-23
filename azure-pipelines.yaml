@@ -41,7 +41,7 @@ stages:
                 echo "Creating resource group if it doesn't exist..."
                 az group create --name $(resourceGroup) --location $(location) --output none
 
-                echo "Deploying Storage Account..."
+                echo "Deploying Vnets..."
                 az deployment group create \
                   --resource-group $(resourceGroup) \
                   --template-file infra/vnet.bicep \

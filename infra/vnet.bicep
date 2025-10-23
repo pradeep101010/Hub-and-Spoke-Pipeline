@@ -3,7 +3,7 @@ param location string = resourceGroup().location
 
 // VNet 1 (Spoke A)
 resource vnet1 'Microsoft.Network/virtualNetworks@2020-11-01' = {
-  name: 'vnet1'
+  name: 'Pradeep-vnet1'
   location: location
   properties: {
     addressSpace: { addressPrefixes: ['10.0.0.0/16'] }
@@ -23,7 +23,7 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2020-11-01' = {
 
 // VNet 2 (Hub)
 resource vnet2 'Microsoft.Network/virtualNetworks@2020-11-01' = {
-  name: 'vnet2'
+  name: 'Pradeep-vnet2'
   location: location
   properties: {
     addressSpace: { addressPrefixes: ['11.0.0.0/16'] }
@@ -41,7 +41,7 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2020-11-01' = {
 
 // VNet 3 (Spoke C)
 resource vnet3 'Microsoft.Network/virtualNetworks@2020-11-01' = {
-  name: 'vnet3'
+  name: 'Pradeep-vnet3'
   location: location
   properties: {
     addressSpace: { addressPrefixes: ['12.0.0.0/16'] }
