@@ -23,7 +23,7 @@ stages:
         deploy:
           steps:
           - checkout: self
-          - task: Bash
+          - task: Bash@3
             displayName: 'Login to Azure using Managed Identity'
             inputs:
               targetType: 'inline'
@@ -32,15 +32,14 @@ stages:
                 az login \
                 --output none
 
-          - task: Bash
+          - task: Bash@3
             displayName: 'Deploy Three VNets and enable Peering'
             inputs:
               targetType: 'inline'
               script: |
                 echo "Creating resource group if not exists..."
                 az group create --name $(resourceGroup) --location $(location) \
-                --only-show-errors \
-                --output none
+                --only-show-errors
 
                 echo "Deploying Three VNets and enable Peering..."
                 az deployment group create \
@@ -49,3 +48,5 @@ stages:
                   --parameters @infra/parameters.json \
                   --only-show-errors \
                   --output none
+
+
