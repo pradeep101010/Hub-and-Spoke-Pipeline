@@ -6,7 +6,7 @@ trigger:
 variables:
   resourceGroup: 'Hub-And-Spoke-RG'
   location: 'eastus'
-  vnetTemplateFile: 'infra/storage.bicep'
+  vnetTemplateFile: 'infra/vnet.bicep'
 
 stages:
 - stage: Deploy
