@@ -1,6 +1,7 @@
 @description('Location for the VNets')
 param location string = resourceGroup().location
 
+// --- VNets ---
 // VNet 1 (Spoke A)
 resource vnet1 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: 'Pradeep-vnet1'
@@ -12,16 +13,14 @@ resource vnet1 'Microsoft.Network/virtualNetworks@2020-11-01' = {
         name: 'Vnet-1-Subnet-1'
         properties: {
           addressPrefix: '10.0.0.0/24'
-          // IP forwarding enabled on the spoke subnet is optional
-          // for VMs to forward traffic if they act as routers
-          // But usually hub subnet needs it
+          // routeTable assigned later
         }
       }
     ]
   }
 }
 
-// VNet 2 (Hub)
+// VNet 2 (Hub B)
 resource vnet2 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: 'Pradeep-vnet2'
   location: location
@@ -30,10 +29,7 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2020-11-01' = {
     subnets: [
       {
         name: 'Vnet-2-Subnet-1'
-        properties: {
-          addressPrefix: '11.0.0.0/24'
-          // Enable IP forwarding so hub can route traffic between spoke
-        }
+        properties: { addressPrefix: '11.0.0.0/24' }
       }
     ]
   }
@@ -50,13 +46,15 @@ resource vnet3 'Microsoft.Network/virtualNetworks@2020-11-01' = {
         name: 'Vnet-3-Subnet-1'
         properties: {
           addressPrefix: '12.0.0.0/24'
+          // routeTable assigned later
         }
       }
     ]
   }
 }
 
-// Peering: A <=> Hub
+// --- Peering ---
+// A <=> Hub
 resource peerAtoHub 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-11-01' = {
   parent: vnet1
   name: 'peerAtoHub'
@@ -76,7 +74,7 @@ resource peerHubToA 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@20
   }
 }
 
-// Peering: C <=> Hub
+// C <=> Hub
 resource peerCtoHub 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-11-01' = {
   parent: vnet3
   name: 'peerCtoHub'
@@ -96,10 +94,57 @@ resource peerHubToC 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@20
   }
 }
 
-// Outputs
-output vnet1Name string = vnet1.name
-output vnet2Name string = vnet2.name
-output vnet3Name string = vnet3.name
-output vnet1SubnetName string = vnet1.properties.subnets[0].name
-output vnet2SubnetName string = vnet2.properties.subnets[0].name
-output vnet3SubnetName string = vnet3.properties.subnets[0].name
+// --- Route Table ---
+resource routeTable 'Microsoft.Network/routeTables@2020-11-01' = {
+  name: 'HubB-RouteTable'
+  location: location
+  properties: {
+    routes: [
+      {
+        name: 'RouteToC'
+        properties: {
+          addressPrefix: '12.0.0.0/16'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: '11.0.0.4' // Hub VM private IP
+        }
+      }
+      {
+        name: 'RouteToA'
+        properties: {
+          addressPrefix: '10.0.0.0/16'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: '11.0.0.4' // Hub VM private IP
+        }
+      }
+    ]
+  }
+}
+// --- Associate Route Table with Spoke A subnet ---
+resource assocRouteA 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet1
+  name: 'Vnet-1-Subnet-1'
+  properties: {
+    addressPrefix: vnet1.properties.subnets[0].properties.addressPrefix
+    routeTable: {
+      id: routeTable.id
+    }
+  }
+}
+
+// --- Associate Route Table with Spoke C subnet ---
+resource assocRouteC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet3
+  name: 'Vnet-3-Subnet-1'
+  properties: {
+    addressPrefix: vnet3.properties.subnets[0].properties.addressPrefix
+    routeTable: {
+      id: routeTable.id
+    }
+  }
+}
+
+// --- Outputs for convenience ---
+output subnetAId string = assocRouteA.id
+output subnetBId string = vnet2.properties.subnets[0].id
+output subnetCId string = assocRouteC.id
+output routeTableId string = routeTable.id

@@ -1,54 +1,49 @@
-@description('Location for all resources')
 param location string = resourceGroup().location
-
-@description('Admin username for all VMs')
 param adminUsername string
+param adminPassword string  // plain inline, not secure
 
-@description('Admin password for all VMs')
-@secure()
-param adminPassword string
-
-// Deploy VNets (A, B, C)
+// Deploy VNets (Hub-Spoke)
 module vnets 'vnet.bicep' = {
-  name: 'vnetsModule'
-  params: {
-    location: location
-  }
+  name: 'vnetModule'
+  params: { location: location }
 }
 
-// Deploy VM in VNet A
+// VM in Spoke A
 module vmA 'vm.bicep' = {
   name: 'vmAModule'
   params: {
-    vmName: 'VM-A'
+    vmName: 'vmA'
     location: location
-    subnetId: vnets.outputs.vnet1SubnetName
+    subnetId: vnets.outputs.subnetAId
+    vmSize: 'Standard_B1s'
     adminUsername: adminUsername
     adminPassword: adminPassword
     enableIpForwarding: false
   }
 }
 
-// Deploy VM in VNet B (Hub) with IP forwarding enabled
+// VM in Hub B (IP forwarding enabled)
 module vmB 'vm.bicep' = {
   name: 'vmBModule'
   params: {
-    vmName: 'VM-B'
+    vmName: 'vmB'
     location: location
-    subnetId: vnets.outputs.vnet2SubnetName
+    subnetId: vnets.outputs.subnetBId
+    vmSize: 'Standard_B1s'
     adminUsername: adminUsername
     adminPassword: adminPassword
     enableIpForwarding: true
   }
 }
 
-// Deploy VM in VNet C
+// VM in Spoke C
 module vmC 'vm.bicep' = {
   name: 'vmCModule'
   params: {
-    vmName: 'VM-C'
+    vmName: 'vmC'
     location: location
-    subnetId: vnets.outputs.vnet3SubnetName
+    subnetId: vnets.outputs.subnetCId
+    vmSize: 'Standard_B1s'
     adminUsername: adminUsername
     adminPassword: adminPassword
     enableIpForwarding: false

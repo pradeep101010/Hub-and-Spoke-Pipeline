@@ -7,7 +7,7 @@ variables:
   resourceGroup: 'Hub-And-Spoke-RG'
   location: 'eastus'
   adminUsername: 'azureuser'
-  adminPassword: 'YourP@ssw0rd123!'  # Ideally use a secure variable in the pipeline
+  adminPassword: 'YourP@ssw0rd123!'  
 
 stages:
 - stage: Deploy

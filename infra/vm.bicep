@@ -1,23 +1,9 @@
-@description('VM Name')
 param vmName string
-
-@description('Location for the VM')
 param location string = resourceGroup().location
-
-@description('Subnet ID where VM will be deployed')
 param subnetId string
-
-@description('VM size')
-param vmSize string = 'Standard_B2s'
-
-@description('Admin username')
+param vmSize string = 'Standard_B1s'
 param adminUsername string
-
-@description('Admin password')
-@secure()
 param adminPassword string
-
-@description('Enable IP forwarding on the NIC?')
 param enableIpForwarding bool = false
 
 resource nic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
@@ -47,9 +33,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-07-01' = {
       adminUsername: adminUsername
       adminPassword: adminPassword
     }
-    networkProfile: {
-      networkInterfaces: [ { id: nic.id } ]
-    }
+    networkProfile: { networkInterfaces: [ { id: nic.id } ] }
     storageProfile: {
       imageReference: {
         publisher: 'Canonical'
@@ -64,3 +48,4 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-07-01' = {
 
 output vmId string = vm.id
 output nicId string = nic.id
+output vmPrivateIp string = nic.properties.ipConfigurations[0].properties.privateIPAddress
