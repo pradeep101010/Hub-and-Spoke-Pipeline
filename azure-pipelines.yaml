@@ -20,7 +20,7 @@ stages:
 
     strategy:
       runOnce:
-        deployVnetAndPeering:
+        deploy:
           steps:
           - checkout: self
           - task: Bash@3
