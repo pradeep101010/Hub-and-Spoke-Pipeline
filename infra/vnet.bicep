@@ -33,7 +33,6 @@ resource vnet2 'Microsoft.Network/virtualNetworks@2020-11-01' = {
         properties: {
           addressPrefix: '11.0.0.0/24'
           // Enable IP forwarding so hub can route traffic between spokes
-          enableIpForwarding: true
         }
       }
     ]
