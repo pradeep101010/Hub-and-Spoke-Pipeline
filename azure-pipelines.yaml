@@ -4,17 +4,17 @@ trigger:
       - main
 
 variables:
-  resourceGroup: 'Demo-RG'
+  resourceGroup: 'Hub-And-Spoke-RG'
   location: 'eastus'
-  storageAccountName: 'demostorage$(Build.BuildId)'
-  sku: 'Standard_LRS'
-  
+  adminUsername: 'azureuser'
+  adminPassword: 'YourP@ssw0rd123!'  # Ideally use a secure variable in the pipeline
+
 stages:
 - stage: Deploy
-  displayName: 'Deploy Vnets'
+  displayName: 'Deploy Hub-Spoke VNets and VMs'
   jobs:
-  - deployment: DeployVnets
-    displayName: 'Deploy Vnets via Bicep'
+  - deployment: DeployInfra
+    displayName: 'Deploy VNets and VMs via Bicep'
     environment: hub-and-spoke-env
     pool:
       vmImage: 'ubuntu-latest'
@@ -34,16 +34,21 @@ stages:
                 az login
 
           - task: Bash@3
-            displayName: 'Deploy Storage Account'
+            displayName: 'Create Resource Group if not exists'
             inputs:
               targetType: 'inline'
               script: |
-                echo "Creating resource group if it doesn't exist..."
                 az group create --name $(resourceGroup) --location $(location) --output none
 
-                echo "Deploying Vnets..."
+          - task: Bash@3
+            displayName: 'Deploy Hub-Spoke VNets and VMs'
+            inputs:
+              targetType: 'inline'
+              script: |
                 az deployment group create \
                   --resource-group $(resourceGroup) \
-                  --template-file infra/vnet.bicep \
-                  --parameters location=$(location)\
+                  --template-file infra/main.bicep \
+                  --parameters location=$(location) \
+                               adminUsername=$(adminUsername) \
+                               adminPassword=$(adminPassword) \
                   --output none
