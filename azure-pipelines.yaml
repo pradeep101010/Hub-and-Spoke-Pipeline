@@ -15,7 +15,7 @@ stages:
   jobs:
   - deployment: DeployStorage
     displayName: 'Deploy Storage via Bicep'
-    environment: storage-env
+    environment: hub-and-spoke-env
     pool:
       vmImage: 'ubuntu-latest'
 
