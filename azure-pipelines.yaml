@@ -30,7 +30,6 @@ stages:
               script: |
                 echo "Logging into Azure using Managed Identity..."
                 az login \
-                  --only-show-errors \
                   --output none
 
           - task: Bash@3
