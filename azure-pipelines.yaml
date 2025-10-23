@@ -4,17 +4,18 @@ trigger:
       - main
 
 variables:
-  resourceGroup: 'Hub-And-Spoke-RG'
+  resourceGroup: 'Demo-RG'
   location: 'eastus'
-  vnetTemplateFile: 'infra/vnet.bicep'
-
+  storageAccountName: 'demostorage$(Build.BuildId)'
+  sku: 'Standard_LRS'
+  
 stages:
 - stage: Deploy
-  displayName: 'Deploy VNets Hub-Spoke'
+  displayName: 'Deploy Storage Account'
   jobs:
-  - deployment: DeployInfra
-    displayName: 'Deploy Infra via Bicep'
-    environment: hub-and-spoke-env
+  - deployment: DeployStorage
+    displayName: 'Deploy Storage via Bicep'
+    environment: storage-env
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -33,16 +34,16 @@ stages:
                 az login
 
           - task: Bash@3
-            displayName: 'Deploy Three VNets and enable Peering'
+            displayName: 'Deploy Storage Account'
             inputs:
               targetType: 'inline'
               script: |
-                echo "Creating resource group if not exists..."
+                echo "Creating resource group if it doesn't exist..."
                 az group create --name $(resourceGroup) --location $(location) --output none
 
-                echo "Deploying Three VNets and enable Peering..."
+                echo "Deploying Storage Account..."
                 az deployment group create \
                   --resource-group $(resourceGroup) \
-                  --template-file $(vnetTemplateFile) \
-                  --parameters location=$(location) \
+                  --template-file infra/storage.bicep \
+                  --parameters storageAccountName=$(storageAccountName) location=$(location) sku=$(sku) \
                   --output none
