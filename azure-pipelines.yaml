@@ -1,0 +1,52 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  resourceGroup: 'Hub-And-Spoke-RG'
+  location: 'eastus'
+  vnetTemplateFile: 'infra/storage.bicep'
+
+stages:
+- stage: Deploy
+  displayName: 'Deploy Storage Account'
+  jobs:
+  - deployment: DeployInfra
+    displayName: 'Deploy Infra via Bicep'
+    environment: hub-and-spoke-env
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    strategy:
+      runOnce:
+        deployVnetAndPeering:
+          steps:
+          - checkout: self
+          - task: Bash@3
+            displayName: 'Login to Azure using Managed Identity'
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "Logging into Azure using Managed Identity..."
+                az login 
+                # Optional: set subscription if multiple exist
+                # az account set --subscription <subscription-id> \
+                  --only-show-errors \
+                  --output none
+
+          - task: Bash@3
+            displayName: 'Deploy Three VNets and enable Peering'
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "Creating resource group if not exists..."
+                az group create --name $(resourceGroup) --location $(location)
+
+                echo "Deploying Three VNets and enable Peering..."
+                az deployment group create \
+                  --resource-group $(resourceGroup) \
+                  --template-file $(vnetTemplateFile) \
+                  --parameters @infra/parameters.json \
+                  --only-show-errors \
+                  --output none
