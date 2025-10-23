@@ -5,7 +5,7 @@ trigger:
 
 variables:
   resourceGroup: 'Hub-And-Spoke-RG'
-  location: 'eastus'
+  location: 'westus2'
   adminUsername: 'azureuser'
   adminPassword: 'YourP@ssw0rd123!'  
 
