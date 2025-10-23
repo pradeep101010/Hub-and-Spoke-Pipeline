@@ -38,7 +38,7 @@ stages:
               targetType: 'inline'
               script: |
                 echo "Creating resource group if not exists..."
-                az group create --name $(resourceGroup) --location $(location)
+                az group create --name $(resourceGroup) --location $(location) \
                 --only-show-errors \
                 --output none
 
