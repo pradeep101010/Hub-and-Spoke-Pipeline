@@ -11,9 +11,6 @@
     "VM-C-Name": {
       "value": "Pradeep-Auto-Created-VM-C"
     },
-    "location": {
-      "value": "eastus"
-    },
     "sku": {
       "value": "Standard_GRS"
     }
