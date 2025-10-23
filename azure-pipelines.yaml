@@ -44,6 +44,6 @@ stages:
                 echo "Deploying Storage Account..."
                 az deployment group create \
                   --resource-group $(resourceGroup) \
-                  --template-file infra/storage.bicep \
+                  --template-file infra/vnet.bicep \
                   --parameters storageAccountName=$(storageAccountName) location=$(location) sku=$(sku) \
                   --output none
