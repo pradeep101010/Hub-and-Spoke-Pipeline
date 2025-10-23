@@ -29,9 +29,7 @@ stages:
               targetType: 'inline'
               script: |
                 echo "Logging into Azure using Managed Identity..."
-                az login 
-                # Optional: set subscription if multiple exist
-                # az account set --subscription <subscription-id> \
+                az login \
                   --only-show-errors \
                   --output none
 
