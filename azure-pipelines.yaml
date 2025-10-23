@@ -44,4 +44,5 @@ stages:
                 az deployment group create \
                   --resource-group $(resourceGroup) \
                   --template-file $(vnetTemplateFile) \
-                  --parameters infra/parameters.json
+                  --parameters location=$(location) \
+                  --output none
