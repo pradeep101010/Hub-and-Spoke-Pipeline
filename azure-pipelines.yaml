@@ -30,7 +30,7 @@ stages:
               script: |
                 echo "Logging into Azure using Managed Identity..."
                 az login \
-                  --output none
+                --output none
 
           - task: Bash@3
             displayName: 'Deploy Three VNets and enable Peering'
