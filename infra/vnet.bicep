@@ -93,6 +93,141 @@ resource peerHubToC 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@20
     remoteVirtualNetwork: { id: vnet3.id }
   }
 }
+// --- NSGs (All traffic allowed) ---
+resource nsgA 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
+  name: 'NSG-Vnet1-Subnet1'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAll'
+        properties: {
+          priority: 100
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+        }
+      }
+      {
+        name: 'AllowAllOutbound'
+        properties: {
+          priority: 100
+          direction: 'Outbound'
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
+resource nsgB 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
+  name: 'NSG-Vnet2-Subnet1'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAll'
+        properties: {
+          priority: 100
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+        }
+      }
+      {
+        name: 'AllowAllOutbound'
+        properties: {
+          priority: 100
+          direction: 'Outbound'
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
+resource nsgC 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
+  name: 'NSG-Vnet3-Subnet1'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAll'
+        properties: {
+          priority: 100
+          direction: 'Inbound'
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+        }
+      }
+      {
+        name: 'AllowAllOutbound'
+        properties: {
+          priority: 100
+          direction: 'Outbound'
+          access: 'Allow'
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
+// --- Associate NSGs with subnets ---
+resource assocNSGA 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet1
+  name: 'Vnet-1-Subnet-1-NSG'
+  properties: {
+    addressPrefix: vnet1.properties.subnets[0].properties.addressPrefix
+    networkSecurityGroup: { id: nsgA.id }
+  }
+}
+
+resource assocNSGB 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet2
+  name: 'Vnet-2-Subnet-1-NSG'
+  properties: {
+    addressPrefix: vnet2.properties.subnets[0].properties.addressPrefix
+    networkSecurityGroup: { id: nsgB.id }
+  }
+}
+
+resource assocNSGC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet3
+  name: 'Vnet-3-Subnet-1-NSG'
+  properties: {
+    addressPrefix: vnet3.properties.subnets[0].properties.addressPrefix
+    networkSecurityGroup: { id: nsgC.id }
+  }
+}
+
+
 
 // --- Route Table ---
 resource routeTable 'Microsoft.Network/routeTables@2020-11-01' = {

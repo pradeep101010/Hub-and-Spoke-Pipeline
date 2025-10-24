@@ -23,6 +23,7 @@ module vmA 'vm.bicep' = {
 }
 
 // VM in Hub B (IP forwarding enabled)
+// Hub VM (IP forwarding enabled)
 module vmB 'vm.bicep' = {
   name: 'vmBModule'
   params: {
@@ -35,6 +36,19 @@ module vmB 'vm.bicep' = {
     enableIpForwarding: true
   }
 }
+
+// Inject custom script extension to enable hub routing
+module hubRouting 'hubVmRouting.bicep' = {
+  name: 'hubRoutingModule'
+  params: {
+    vmName: vmB.outputs.vmId  // Pass VM name or resource id
+    location: location
+  }
+  dependsOn: [
+    vmB
+  ]
+}
+
 
 // VM in Spoke C
 module vmC 'vm.bicep' = {
