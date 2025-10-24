@@ -249,7 +249,7 @@ resource assocSubnetC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
   parent: vnet1
   name: 'Vnet-3-Subnet-1'
   properties: {
-    addressPrefix: vnet1.properties.subnets[0].properties.addressPrefix
+    addressPrefix: vnet3.properties.subnets[0].properties.addressPrefix
     networkSecurityGroup: { id: nsgC.id }
     routeTable: { id: routeTable.id }
   }
