@@ -56,12 +56,19 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-07-01' = {
       settings: {
         fileUris: []
         commandToExecute: '''
-          #!/bin/bash
-          sudo sysctl -w net.ipv4.ip_forward=1
-          echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
-          sudo iptables -t nat -A POSTROUTING -j MASQUERADE
-          sudo iptables -A FORWARD -j ACCEPT
-        '''
+        #!/bin/bash
+        # Enable IP forwarding
+        sudo sysctl -w net.ipv4.ip_forward=1
+        echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+
+        # Enable NAT for forwarded traffic
+        sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+        sudo iptables -A FORWARD -j ACCEPT
+
+        # Open ICMP for ping
+        sudo iptables -I INPUT -p icmp -j ACCEPT
+        sudo iptables -I OUTPUT -p icmp -j ACCEPT
+      '''
       }
     }
     location: location
