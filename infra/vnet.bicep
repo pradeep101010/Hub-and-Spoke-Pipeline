@@ -198,37 +198,6 @@ resource nsgC 'Microsoft.Network/networkSecurityGroups@2020-11-01' = {
     ]
   }
 }
-
-// --- Associate NSGs with subnets ---
-resource assocNSGA 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
-  parent: vnet1
-  name: 'Vnet-1-Subnet-1-NSG'
-  properties: {
-    addressPrefix: vnet1.properties.subnets[0].properties.addressPrefix
-    networkSecurityGroup: { id: nsgA.id }
-  }
-}
-
-resource assocNSGB 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
-  parent: vnet2
-  name: 'Vnet-2-Subnet-1-NSG'
-  properties: {
-    addressPrefix: vnet2.properties.subnets[0].properties.addressPrefix
-    networkSecurityGroup: { id: nsgB.id }
-  }
-}
-
-resource assocNSGC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
-  parent: vnet3
-  name: 'Vnet-3-Subnet-1-NSG'
-  properties: {
-    addressPrefix: vnet3.properties.subnets[0].properties.addressPrefix
-    networkSecurityGroup: { id: nsgC.id }
-  }
-}
-
-
-
 // --- Route Table ---
 resource routeTable 'Microsoft.Network/routeTables@2020-11-01' = {
   name: 'HubB-RouteTable'
@@ -254,32 +223,44 @@ resource routeTable 'Microsoft.Network/routeTables@2020-11-01' = {
     ]
   }
 }
-// --- Associate Route Table with Spoke A subnet ---
-resource assocRouteA 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+
+// --- Associate NSGs and Route table with subnets ---
+resource assocSubnetA 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
   parent: vnet1
   name: 'Vnet-1-Subnet-1'
   properties: {
     addressPrefix: vnet1.properties.subnets[0].properties.addressPrefix
-    routeTable: {
-      id: routeTable.id
-    }
+    networkSecurityGroup: { id: nsgA.id }
+    routeTable: { id: routeTable.id }
   }
 }
 
-// --- Associate Route Table with Spoke C subnet ---
-resource assocRouteC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
-  parent: vnet3
+
+resource assocSubnetB 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet2
+  name: 'Vnet-2-Subnet-1'
+  properties: {
+    addressPrefix: vnet2.properties.subnets[0].properties.addressPrefix
+    networkSecurityGroup: { id: nsgB.id }
+  }
+}
+
+resource assocSubnetC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
+  parent: vnet1
   name: 'Vnet-3-Subnet-1'
   properties: {
-    addressPrefix: vnet3.properties.subnets[0].properties.addressPrefix
-    routeTable: {
-      id: routeTable.id
-    }
+    addressPrefix: vnet1.properties.subnets[0].properties.addressPrefix
+    networkSecurityGroup: { id: nsgC.id }
+    routeTable: { id: routeTable.id }
   }
 }
 
+
+
+
+
 // --- Outputs for convenience ---
-output subnetAId string = assocRouteA.id
+output subnetAId string = assocSubnetA.id
 output subnetBId string = vnet2.properties.subnets[0].id
-output subnetCId string = assocRouteC.id
+output subnetCId string = assocSubnetC.id
 output routeTableId string = routeTable.id
