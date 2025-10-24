@@ -44,7 +44,31 @@ resource vm 'Microsoft.Compute/virtualMachines@2021-07-01' = {
       osDisk: { createOption: 'FromImage' }
     }
   }
+
+  // Nested extension: remove location
+  resource enableForwarding 'extensions@2021-07-01' = if (enableIpForwarding) {
+    name: 'EnableIPForwarding'
+    properties: {
+      publisher: 'Microsoft.Azure.Extensions'
+      type: 'CustomScript'
+      typeHandlerVersion: '2.1'
+      autoUpgradeMinorVersion: true
+      settings: {
+        fileUris: []
+        commandToExecute: '''
+          #!/bin/bash
+          sudo sysctl -w net.ipv4.ip_forward=1
+          echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+          sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+          sudo iptables -A FORWARD -j ACCEPT
+        '''
+      }
+    }
+    location: location
+  }
 }
+
+
 
 output vmId string = vm.id
 output nicId string = nic.id
