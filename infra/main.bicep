@@ -37,19 +37,6 @@ module vmB 'vm.bicep' = {
   }
 }
 
-// Inject custom script extension to enable hub routing
-module hubRouting 'hubVmRouting.bicep' = {
-  name: 'hubRoutingModule'
-  params: {
-    vmName: vmB.outputs.vmId  // Pass VM name or resource id
-    location: location
-  }
-  dependsOn: [
-    vmB
-  ]
-}
-
-
 // VM in Spoke C
 module vmC 'vm.bicep' = {
   name: 'vmCModule'
