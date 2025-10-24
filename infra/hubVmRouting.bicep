@@ -3,8 +3,12 @@ param vmName string
 @description('Resource group location')
 param location string = resourceGroup().location
 
+resource vm 'Microsoft.Compute/virtualMachines@2021-07-01' existing = {
+  name: vmName
+}
 resource customScript 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = {
-  name: '${vmName}/EnableIPForwarding'
+  parent: vm
+  name: 'EnableIPForwarding'
   location: location
   properties: {
     publisher: 'Microsoft.Azure.Extensions'
