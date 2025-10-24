@@ -246,7 +246,7 @@ resource assocSubnetB 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
 }
 
 resource assocSubnetC 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = {
-  parent: vnet1
+  parent: vnet3
   name: 'Vnet-3-Subnet-1'
   properties: {
     addressPrefix: vnet3.properties.subnets[0].properties.addressPrefix
